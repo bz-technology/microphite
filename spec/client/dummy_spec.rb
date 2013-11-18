@@ -3,8 +3,8 @@
 
 require 'spec_helper'
 
-describe Microphite::Client::Dummy do
-  include_examples 'microphite client'
-
-  let(:client) { Microphite::Client::Dummy.new }
+module Microphite
+  describe Client::Dummy do
+    include_examples 'microphite client', Client::Dummy.new
+  end
 end
