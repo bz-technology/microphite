@@ -1,0 +1,13 @@
+# Editor cruft
+*~
+*.swp
+*.swo
+
+# IntelliJ
+*.iml
+/.idea
+
+# This is a library, so don't lock versions/environs
+/.ruby-gemset
+/.ruby-version
+/Gemfile.lock
