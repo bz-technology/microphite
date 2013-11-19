@@ -7,10 +7,10 @@ module Microphite
   describe Client::Base do
 
     describe :prefix do
-      it 'should prefix writes' do
+      it 'should prefix :write' do
         prefix = 'test.'
         mock_client = double('client')
-        prefixed_client = Client::Base::Prefixed.new(mock_client, prefix)
+        prefixed_client = Client::Private::Prefixed.new(mock_client, prefix)
         original_arg = {:key1 => 1, 'key2' => 2}
 
         expect(mock_client).to receive(:write) do |prefixed_arg|
@@ -26,10 +26,10 @@ module Microphite
         prefixed_client.write(original_arg)
       end
 
-      it 'should prefix gathers' do
+      it 'should prefix :gather' do
         prefix = 'test.'
         mock_client = double('client')
-        prefixed_client = Client::Base::Prefixed.new(mock_client, prefix)
+        prefixed_client = Client::Private::Prefixed.new(mock_client, prefix)
         original_arg = {:key1 => 1, 'key2' => 2}
 
         expect(mock_client).to receive(:gather) do |prefixed_arg|
@@ -43,6 +43,22 @@ module Microphite
         end
 
         prefixed_client.gather(original_arg)
+      end
+
+      it 'should prefix :time' do
+        prefix = 'test.'
+        mock_client = double('client')
+        prefixed_client = Client::Private::Prefixed.new(mock_client, prefix)
+        original_key = :key
+
+        expect(mock_client).to receive(:time) do |prefixed_key|
+          mutated_key = prefix + original_key.to_s
+          expect(mutated_key).to eq prefixed_key
+        end
+
+        prefixed_client.time(original_key) do
+          42
+        end
       end
     end
   end

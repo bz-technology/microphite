@@ -3,14 +3,14 @@
 
 module Microphite
   module Client
-    class Noop < Base
-      def initialize(options={})
-        super(options)
-      end
+    module Private
+      class Timestamped
+        attr_accessor :value, :time
 
-      protected
-
-      def write_metric(metric)
+        def initialize(value)
+          @value = value
+          @time = Time.now.to_f
+        end
       end
     end
   end
