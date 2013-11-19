@@ -47,9 +47,9 @@ module Microphite
       def write(metrics)
         case metrics
           when Hash, Array
-            push(@write_stack, Private::Timestamped.new(metrics.clone))
+            push(@write_stack, metrics.clone)
           when Metric
-            push(@write_stack, Private::Timestamped.new(metrics))
+            push(@write_stack, metrics)
           else
             error(ArgumentError.new("Invalid argument type: #{metrics.class}"))
             false
@@ -59,9 +59,9 @@ module Microphite
       def gather(metrics)
         case metrics
           when Hash, Array
-            push(@gather_stack, Private::Timestamped.new(metrics.clone))
+            push(@gather_stack, metrics.clone)
           when Metric
-            push(@gather_stack, Private::Timestamped.new(metrics))
+            push(@gather_stack, metrics)
           else
             error(ArgumentError.new("Invalid argument type: #{metrics.class}"))
             false
@@ -162,10 +162,11 @@ module Microphite
       end
 
       def push(stack, value)
+        timestamp = Time.now.to_f
         pushed = false
         @lock.synchronize do
           if stack.length <= @limit and @status == :running
-            stack << value
+            stack << timestamp << value
             pushed = true
             @worker_event.signal
           end
@@ -175,14 +176,21 @@ module Microphite
 
       def unwind(stack)
         metrics = []
-        stack.each do |timestamped|
-          value = timestamped.value
+        until stack.empty?
+          value = stack.pop
+          timestamp = stack.pop
           wrap_errors do
             case value
               when Hash
-                value.each_pair { |k, v| metrics << Metric.new(k, v, timestamped.time) }
+                value.each_pair { |k, v| metrics << Metric.new(k, v, timestamp) }
               when Array
-                metrics.concat value
+                metrics.each do |m|
+                  if m.is_a? Metric
+                    metrics << m
+                  else
+                    error(AssertionError.new("Unhandled metric type: #{value.class}"))
+                  end
+                end
               when Metric
                 metrics << value
               else
