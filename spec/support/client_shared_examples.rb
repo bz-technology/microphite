@@ -25,14 +25,6 @@ shared_examples 'a microphite client' do |before, after|
       expect { @client.write(key: 0) }.not_to raise_error
       expect { @client.write(key1: 1, key2: 2.5) }.not_to raise_error
     end
-
-    it 'should tolerate garbage input' do
-      expect { @client.write(nil) }.not_to raise_error
-      expect { @client.write('string') }.not_to raise_error
-      expect { @client.write(0) }.not_to raise_error
-      expect { @client.write(key: 'string') }.not_to raise_error
-      expect { @client.write(key: nil) }.not_to raise_error
-    end
   end
 
   describe :gather do
@@ -40,25 +32,12 @@ shared_examples 'a microphite client' do |before, after|
       expect { @client.gather(key: 0) }.not_to raise_error
       expect { @client.gather(key1: 1, key2: 2.5) }.not_to raise_error
     end
-
-    it 'should tolerate garbage input' do
-      expect { @client.gather(nil) }.not_to raise_error
-      expect { @client.gather('string') }.not_to raise_error
-      expect { @client.gather(0) }.not_to raise_error
-      expect { @client.gather(key: 'string') }.not_to raise_error
-      expect { @client.gather(key: nil) }.not_to raise_error
-    end
   end
 
   describe :time do
     it 'should tolerate valid input' do
       expect { @client.time(:key) { 42 } }.not_to raise_error
       expect { @client.time('key') { 42 } }.not_to raise_error
-    end
-
-    it 'should tolerate garbage input' do
-      expect { @client.time(nil) { 42 } }.not_to raise_error
-      expect { @client.time(0) { 42 } }.not_to raise_error
     end
 
     it 'should return the evaluated block value' do

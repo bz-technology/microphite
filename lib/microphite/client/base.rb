@@ -45,27 +45,11 @@ module Microphite
       end
 
       def write(metrics)
-        case metrics
-          when Hash, Array
-            push(@write_stack, metrics.clone)
-          when Metric
-            push(@write_stack, metrics)
-          else
-            error(ArgumentError.new("Invalid argument type: #{metrics.class}"))
-            false
-        end
+        push(@write_stack, metrics.clone)
       end
 
       def gather(metrics)
-        case metrics
-          when Hash, Array
-            push(@gather_stack, metrics.clone)
-          when Metric
-            push(@gather_stack, metrics)
-          else
-            error(ArgumentError.new("Invalid argument type: #{metrics.class}"))
-            false
-        end
+        push(@gather_stack, metrics.clone)
       end
 
       def prefix(prefix, &block)
