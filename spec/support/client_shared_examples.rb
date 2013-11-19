@@ -1,7 +1,7 @@
 # Copyright (c) 2013 BZ Technology Services, LLC
 # Released under the MIT License (http://opensource.org/licenses/MIT)
 
-PUBLIC_METHODS = [:write, :gather, :prefix, :close]
+PUBLIC_METHODS = [:write, :gather, :time, :prefix, :close]
 
 shared_examples 'microphite client' do |client|
   describe 'interface' do
@@ -39,6 +39,22 @@ shared_examples 'microphite client' do |client|
       expect { client.gather(0) }.not_to raise_error
       expect { client.gather(key: 'string') }.not_to raise_error
       expect { client.gather(key: nil) }.not_to raise_error
+    end
+  end
+
+  describe :time do
+    it 'should tolerate valid input' do
+      expect { client.time(:key) { 42 } }.not_to raise_error
+      expect { client.time('key') { 42 } }.not_to raise_error
+    end
+
+    it 'should tolerate garbage input' do
+      expect { client.time(nil) { 42 } }.not_to raise_error
+      expect { client.time(0) { 42 } }.not_to raise_error
+    end
+
+    it 'should return the evaluated block value' do
+      expect(client.time(:key) { 42 }).to eq 42
     end
   end
 

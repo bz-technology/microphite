@@ -79,6 +79,24 @@ module Microphite
         end
       end
     end
+
+    describe :time do
+      it 'should generate sensible values' do
+        before = Time.now.to_f
+        @client.time(:key) { 42 }
+        after = Time.now.to_f
+        outer_timing = after - before
+
+        @client.close
+        lines = @server.bytes
+        pattern = /^key (?<value>[0-9.]+) \d+$/
+
+        lines.should match(pattern)
+        value = pattern.match(lines)[:value]
+        value.should_not eq nil
+        expect { value > 0 and value < outer_timing }.to be_true
+      end
+    end
   end
 
   describe Client::Socket do
