@@ -54,7 +54,7 @@ module Microphite
         @client.close
 
         lines = @server.bytes
-        (1..10).each do |n|
+        (1..4).each do |n|
           lines.should match(/^key#{n} #{n * 10} \d+$/)
         end
       end
