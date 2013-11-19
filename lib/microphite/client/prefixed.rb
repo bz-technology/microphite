@@ -10,21 +10,31 @@ module Microphite
       end
 
       def write(metrics)
-        # TODO: Alter all hash keys with prefix
-        @client.write(metrics)
+        @client.write(mutate_hash(metrics))
       end
 
       def gather(metrics)
-        # TODO: Alter all hash keys with prefix
-        @client.write(metrics)
+        @client.gather(mutate_hash(metrics))
       end
 
-      def prefix(prefix, &block)
-        @client.prefix("#{@prefix}.#{prefix}", &block)
+      def prefix(additional, &block)
+        @client.prefix("#{@prefix}#{additional}", &block)
       end
 
       def close(timeout=nil)
         @client.close(timeout)
+      end
+
+      private
+
+      def mutate_hash(hash)
+        return unless hash.is_a? Hash
+        mutated = {}
+        hash.each_pair do |k, v|
+          next unless k.is_a? String or k.is_a? Symbol
+          mutated[@prefix + k.to_s] = v
+        end
+        mutated
       end
     end
   end
