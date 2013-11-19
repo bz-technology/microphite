@@ -20,7 +20,7 @@ module Microphite
         true
       end
 
-      def shutdown(timeout=nil)
+      def close(timeout=nil)
         true
       end
     end

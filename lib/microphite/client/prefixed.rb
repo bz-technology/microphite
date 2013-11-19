@@ -23,8 +23,8 @@ module Microphite
         @client.prefix("#{@prefix}.#{prefix}", &block)
       end
 
-      def shutdown(timeout=nil)
-        @client.shutdown(timeout)
+      def close(timeout=nil)
+        @client.close(timeout)
       end
     end
   end

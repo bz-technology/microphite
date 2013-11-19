@@ -1,7 +1,7 @@
 # Copyright (c) 2013 BZ Technology Services, LLC
 # Released under the MIT License (http://opensource.org/licenses/MIT)
 
-PUBLIC_METHODS = [:write, :gather, :prefix, :shutdown]
+PUBLIC_METHODS = [:write, :gather, :prefix, :close]
 
 shared_examples 'microphite client' do |client|
   describe 'interface' do
@@ -51,9 +51,9 @@ shared_examples 'microphite client' do |client|
     end
   end
 
-  describe :shutdown do
+  describe :close do
     it 'should not blow up' do
-      expect { client.shutdown }.not_to raise_error
+      expect { client.close }.not_to raise_error
     end
   end
 end

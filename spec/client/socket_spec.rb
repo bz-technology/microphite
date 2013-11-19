@@ -20,7 +20,7 @@ module Microphite
         @client.write('key5' => 5, 'key6' => 6)
         @client.write('key7' => 7, :key8 => 8)
         @client.write(:key9 => 9, 'key10' => 10)
-        @client.shutdown
+        @client.close
 
         lines = @server.bytes
         (1..10).each do |n|
@@ -37,7 +37,7 @@ module Microphite
         @client.gather('key5' => 5, 'key6' => 6)
         @client.gather('key7' => 7, :key8 => 8)
         @client.gather(:key9 => 9, 'key10' => 10)
-        @client.shutdown
+        @client.close
 
         lines = @server.bytes
         (1..10).each do |n|
@@ -51,7 +51,7 @@ module Microphite
           @client.gather('key2' => 2)
           @client.gather(key3 => 3, 'key4' => 4)
         end
-        @client.shutdown
+        @client.close
 
         lines = @server.bytes
         (1..10).each do |n|

@@ -36,7 +36,7 @@ module Microphite
         end
       end
 
-      def shutdown(timeout=nil)
+      def close(timeout=nil)
         @socket.close unless @socket.nil?
       end
 
