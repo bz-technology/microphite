@@ -12,8 +12,8 @@ module Microphite
       @client = Client::Socket.new(host:'localhost', port:@server.port, transport:transport)
     end
 
-    describe 'write' do
-      it 'should support symbol and string metrics' do
+    describe :write do
+      it 'should handle Symbol and String keys' do
         @client.write(key1: 1)
         @client.write(key2: 2, key3: 3)
         @client.write('key4' => 4)
@@ -27,10 +27,20 @@ module Microphite
           lines.should match(/^key#{n} #{n} \d+$/)
         end
       end
+
+      it 'should handle Integer and Float values' do
+        @client.write(key1: 1)
+        @client.write(key2: 2.5)
+        @client.close
+
+        lines = @server.bytes
+        lines.should match(/^key1 1 \d+$/)
+        lines.should match(/^key1 2\.\d+ \d+$/)
+      end
     end
 
-    describe 'gather' do
-      it 'should support symbol and string metrics' do
+    describe :gather do
+      it 'should handle Symbol and String keys' do
         @client.gather(key1: 1)
         @client.gather(key2: 2, key3: 3)
         @client.gather('key4' => 4)
@@ -43,6 +53,16 @@ module Microphite
         (1..10).each do |n|
           lines.should match(/^key#{n} #{n} \d+$/)
         end
+      end
+
+      it 'should handle Integer and Float values' do
+        @client.gather(key1: 1)
+        @client.gather(key2: 2.5)
+        @client.close
+
+        lines = @server.bytes
+        lines.should match(/^key1 1 \d+$/)
+        lines.should match(/^key1 2\.\d+ \d+$/)
       end
 
       it 'should accumulate data' do

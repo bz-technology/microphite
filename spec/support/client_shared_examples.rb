@@ -14,8 +14,8 @@ shared_examples 'microphite client' do |client|
 
   describe :write do
     it 'should tolerate valid input' do
-      expect { client.write(key: '0') }.not_to raise_error
-      expect { client.write(key1: '1', key2: '2') }.not_to raise_error
+      expect { client.write(key: 0) }.not_to raise_error
+      expect { client.write(key1: 1, key2: 2.5) }.not_to raise_error
     end
 
     it 'should tolerate garbage input' do
@@ -29,8 +29,8 @@ shared_examples 'microphite client' do |client|
 
   describe :gather do
     it 'should tolerate valid input' do
-      expect { client.gather(key: '0') }.not_to raise_error
-      expect { client.gather(key1: '1', key2: '2') }.not_to raise_error
+      expect { client.gather(key: 0) }.not_to raise_error
+      expect { client.gather(key1: 1, key2: 2.5) }.not_to raise_error
     end
 
     it 'should tolerate garbage input' do
