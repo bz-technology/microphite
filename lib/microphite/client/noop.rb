@@ -3,7 +3,7 @@
 
 module Microphite
   module Client
-    class Dummy < Base
+    class Noop < Base
       def initialize(options=nil)
       end
     end

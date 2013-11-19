@@ -5,6 +5,6 @@ require 'spec_helper'
 
 module Microphite
   describe Client::Prefixed do
-    include_examples 'microphite client', Client::Prefixed.new(Client::Dummy.new, 'test')
+    include_examples 'microphite client', Client::Prefixed.new(Client::Noop.new, 'test')
   end
 end

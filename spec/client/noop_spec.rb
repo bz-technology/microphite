@@ -4,7 +4,7 @@
 require 'spec_helper'
 
 module Microphite
-  describe Client::Dummy do
-    include_examples 'microphite client', Client::Dummy.new
+  describe Client::Noop do
+    include_examples 'microphite client', Client::Noop.new
   end
 end
