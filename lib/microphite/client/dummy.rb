@@ -3,27 +3,12 @@
 
 module Microphite
   module Client
-    class Dummy
+    class Dummy < Base
       def initialize(options=nil)
       end
 
-      def write(metrics)
-        true
-      end
-
-      def gather(metrics)
-        true
-      end
-
-      def prefix(prefix, &block)
-        block.call
-      end
-
+      # Dummy client shouldn't schedule timers
       def every(seconds, &block)
-      end
-
-      def shutdown(timeout=nil)
-        true
       end
     end
   end

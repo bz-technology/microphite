@@ -5,7 +5,7 @@ require 'socket'
 
 module Microphite
   module Client
-    class Socket
+    class Socket < Base
       def initialize(host, port=2003, transport=:udp)
         @host = host
         @port = port
@@ -14,43 +14,45 @@ module Microphite
 
       def write(metrics)
         if metrics.is_a? Hash
-          metrics.each_pair do |key, value|
-            begin
-              new_socket
+          begin
+            ensure_connected
+            metrics.each_pair do |key, value|
               @socket.send("#{key} #{value} #{Time.now.to_i}\n", 0)
-              @socket.close
-            rescue
             end
+          rescue
           end
         end
       end
 
       def gather(metrics)
-        true
-      end
-
-      def prefix(prefix, &block)
-        block.call
-      end
-
-      def every(seconds, &block)
+        if metrics.is_a? Hash
+          begin
+            ensure_connected
+            metrics.each_pair do |key, value|
+              @socket.send("#{key} #{value} #{Time.now.to_i}\n", 0)
+            end
+          rescue
+          end
+        end
       end
 
       def shutdown(timeout=nil)
-        true
+        @socket.close unless @socket.nil?
       end
 
       private
 
-      def new_socket
-        case @transport
-          when :tcp
-            @socket = TCPSocket.new(@host, @port)
-          when :udp
-            @socket = UDPSocket.new
-            @socket.connect(@host, @port)
-          else
-            raise(ArgumentError, "transport type is invalid: #{@transport}")
+      def ensure_connected
+        if @socket.nil?
+          case @transport
+            when :tcp
+              @socket = TCPSocket.new(@host, @port)
+            when :udp
+              @socket = UDPSocket.new
+              @socket.connect(@host, @port)
+            else
+              raise(ArgumentError, "transport type is invalid: #{@transport}")
+          end
         end
       end
     end
