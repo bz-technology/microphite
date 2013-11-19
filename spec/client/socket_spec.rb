@@ -4,13 +4,19 @@
 require 'spec_helper'
 
 module Microphite
-  shared_examples 'microphite socket client' do |transport|
-    include_examples 'microphite client', Client::Socket.new(host: 'localhost', port: 2003, transport: transport)
+  shared_examples 'a microphite socket client' do |transport|
+    before_block = Proc.new do
+      @server = Helpers::SingleServe.new(transport)
+      client_options = { host: 'localhost', port: @server.port, transport: transport }
+      @client = Client::Socket.new(client_options)
+    end
+    after_block = Proc.new {}
 
     before do
-      @server = Helpers::SingleServe.new(transport)
-      @client = Client::Socket.new(host:'localhost', port:@server.port, transport:transport)
+      instance_eval &before_block
     end
+
+    it_should_behave_like 'a microphite client', before_block, after_block
 
     describe :write do
       it 'should handle Symbol and String keys' do
@@ -24,7 +30,7 @@ module Microphite
 
         lines = @server.bytes
         (1..10).each do |n|
-          lines.should match(/^key#{n} #{n} \d+$/)
+          lines.should match(/^key#{n} #{n}\.0* \d+$/)
         end
       end
 
@@ -34,8 +40,8 @@ module Microphite
         @client.close
 
         lines = @server.bytes
-        lines.should match(/^key1 1 \d+$/)
-        lines.should match(/^key1 2\.\d+ \d+$/)
+        lines.should match(/^key1 1\.0* \d+$/)
+        lines.should match(/^key2 2\.50* \d+$/)
       end
     end
 
@@ -51,7 +57,7 @@ module Microphite
 
         lines = @server.bytes
         (1..10).each do |n|
-          lines.should match(/^key#{n} #{n} \d+$/)
+          lines.should match(/^key#{n} #{n}\.0* \d+$/)
         end
       end
 
@@ -61,8 +67,8 @@ module Microphite
         @client.close
 
         lines = @server.bytes
-        lines.should match(/^key1 1 \d+$/)
-        lines.should match(/^key1 2\.\d+ \d+$/)
+        lines.should match(/^key1 1\.0* \d+$/)
+        lines.should match(/^key2 2\.50* \d+$/)
       end
 
       it 'should accumulate data' do
@@ -75,7 +81,7 @@ module Microphite
 
         lines = @server.bytes
         (1..4).each do |n|
-          lines.should match(/^key#{n} #{n * 10} \d+$/)
+          lines.should match(/^key#{n} #{n * 10}\.0* \d+$/)
         end
       end
     end
@@ -101,11 +107,11 @@ module Microphite
 
   describe Client::Socket do
     context 'tcp' do
-      include_examples 'microphite socket client', :tcp
+      it_should_behave_like 'a microphite socket client', :tcp
     end
 
     context 'udp' do
-      include_examples 'microphite socket client', :udp
+      it_should_behave_like 'a microphite socket client', :udp
     end
   end
 end
