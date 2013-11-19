@@ -6,10 +6,6 @@ module Microphite
     class Dummy < Base
       def initialize(options=nil)
       end
-
-      # Dummy client shouldn't schedule timers
-      def every(seconds, &block)
-      end
     end
   end
 end

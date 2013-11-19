@@ -1,7 +1,7 @@
 # Copyright (c) 2013 BZ Technology Services, LLC
 # Released under the MIT License (http://opensource.org/licenses/MIT)
 
-PUBLIC_METHODS = [:write, :gather, :prefix, :every, :shutdown]
+PUBLIC_METHODS = [:write, :gather, :prefix, :shutdown]
 
 shared_examples 'microphite client' do |client|
   describe 'interface' do
@@ -48,12 +48,6 @@ shared_examples 'microphite client' do |client|
       PUBLIC_METHODS.each do |method|
         prefixed.should respond_to method
       end
-    end
-  end
-
-  describe :every do
-    it 'should not blow up' do
-      expect { client.every(1) {true} }.not_to raise_error
     end
   end
 

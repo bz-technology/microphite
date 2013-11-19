@@ -12,10 +12,6 @@ module Microphite
         prefixed
       end
 
-      def every(seconds, &block)
-        # TODO
-      end
-
       def write(metrics)
         true
       end
