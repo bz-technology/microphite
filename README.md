@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/bz-technology/microphite.png?branch=master)](https://travis-ci.org/bz-technology/microphite)
+
 Microphite
 ==========
 
