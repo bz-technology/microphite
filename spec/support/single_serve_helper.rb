@@ -46,35 +46,40 @@ module Helpers
 
     def tcp_loop
       client_socket = @socket.accept
-      read_fully client_socket
-      @bytes
-    end
-
-    def udp_loop
-      read_fully @socket
-      @bytes
-    end
-
-    def read_fully(socket)
       loop do
-        readable = select([socket])[0]
+        readable = select([client_socket])[0]
         if readable.empty?
-          return
+          break
         else
           begin
             buffer = ''
-            socket.readpartial(4096, buffer)
+            client_socket.readpartial(4096, buffer)
             @bytes << buffer
-            if @bytes.end_with? CLOSE_MAGIC
-              @bytes.chomp! CLOSE_MAGIC
-              return
-            end
           rescue EOFError
             @bytes << buffer
             return
           end
         end
       end
+      @bytes
     end
+
+    def udp_loop
+      client_socket = @socket
+      loop do
+        readable = select([client_socket])[0]
+        if readable.empty?
+          break
+        else
+          @bytes << client_socket.recvfrom_nonblock(4096)[0]
+          if @bytes.end_with? CLOSE_MAGIC
+            @bytes.chomp! CLOSE_MAGIC
+            break
+          end
+        end
+      end
+      @bytes
+    end
+
   end
 end
