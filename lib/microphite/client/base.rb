@@ -45,11 +45,13 @@ module Microphite
       end
 
       def write(metrics)
-        push(@write_queue, metrics.clone)
+        return false unless metrics.is_a? Hash
+        push(@write_queue, metrics)
       end
 
       def gather(metrics)
-        push(@gather_queue, metrics.clone)
+        return false unless metrics.is_a? Hash
+        push(@gather_queue, metrics)
       end
 
       def prefix(prefix, &block)
@@ -138,10 +140,12 @@ module Microphite
         end
       end
 
-      def push(queue, value)
+      def push(queue, metrics)
+        timestamp = now
+        cloned = metrics.clone
         @lock.synchronize do
           if queue.length <= @limit and @status == :running
-            queue.push [now, value]
+            queue.push [timestamp, cloned]
             @worker_event.signal
             true
           else
@@ -154,24 +158,9 @@ module Microphite
         metrics = []
         until queue.empty?
           tuple = queue.pop
-          timestamp, value = tuple[0], tuple[1]
+          timestamp, hash = tuple[0], tuple[1]
           wrap_errors do
-            case value
-              when Hash
-                value.each_pair { |k, v| metrics << Metric.new(k, v, timestamp) }
-              when Array
-                metrics.each do |m|
-                  if m.is_a? Metric
-                    metrics << m
-                  else
-                    error(AssertionError.new("Unhandled metric type: #{value.class}"))
-                  end
-                end
-              when Metric
-                metrics << value
-              else
-                error(AssertionError.new("Unhandled metric type: #{value.class}"))
-            end
+            hash.each_pair { |k, v| metrics << Metric.new(k, v, timestamp) }
           end
         end
         metrics
