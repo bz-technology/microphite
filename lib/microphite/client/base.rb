@@ -26,7 +26,7 @@ module Microphite
 
         # Worker state
         @accumulating     = {}
-        @next_flush       = Time.now.to_f + @flush_interval
+        @next_flush       = now + @flush_interval
 
         # Synchronization primitives
         @lock             = Mutex.new
@@ -62,9 +62,9 @@ module Microphite
 
       def time(key, &block)
         if block_given?
-          before = Time.now.to_f
+          before = now
           result = instance_eval &block
-          after = Time.now.to_f
+          after = now
           elapsed = after - before
           gather(key => elapsed)
           result
@@ -113,7 +113,7 @@ module Microphite
               if @write_stack.empty? and @gather_stack.empty?
                 case @status
                   when :running
-                    wait_time = @next_flush - Time.now.to_f
+                    wait_time = @next_flush - now
                     if wait_time > 0
                       @worker_event.wait(@lock, wait_time)
                     end
@@ -146,7 +146,7 @@ module Microphite
       end
 
       def push(stack, value)
-        timestamp = Time.now.to_f
+        timestamp = now
         pushed = false
         @lock.synchronize do
           if stack.length <= @limit and @status == :running
@@ -194,14 +194,17 @@ module Microphite
       end
 
       def flush_accumulating
-        now = Time.now.to_f
         @accumulating.each_pair { |k, v| write_metric(Metric.new(k, v, now)) }
         @accumulating.clear
         @next_flush = now + @flush_interval
       end
 
       def should_flush?
-        Time.now.to_f > @next_flush
+        now > @next_flush
+      end
+
+      def now
+        Time.now.to_f
       end
 
       def error(error)
