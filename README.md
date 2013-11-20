@@ -27,16 +27,15 @@ Construct a client with an error_handler.  The client is fault tolerant, but
 an error_handler is useful for logging failure events.
 
     handler = Proc.new { |error| Rails.logger.error "Microphite error: #{error.message}" }
-    client = Microphite::Client::Socket.net(host: '...', error_handler: handler)
+    client = Microphite::Client::Socket.new(host: '...', error_handler: handler)
 
 Construct a no-op/dummy client.  This is useful in development.  You can leave client API
 calls in-place and the dummy client will behave appropriately.
 
-    # Initializer options are still accepted for the dummy client, but no data
-    # is ever written by it
+    # Initializer options are accepted, but no data is written
     client = Microphite::Client::Dummy.new(host: 'blah', ...)
 
-Send complete data points
+Send data points
 
     client.write('some.key': 300, 'another.key': 25)
 
@@ -85,7 +84,7 @@ Client Options
   <tr>
     <td><tt>:host</tt></td>
     <td>String</td>
-    <td>Graphite server -- REQUIRED</td>
+    <td>Graphite server host (REQUIRED)</td>
     <td><tt>nil</tt></td>
   </tr>
   <tr>
@@ -121,13 +120,13 @@ Client Options
   <tr>
     <td><tt>:min_delay</tt></td>
     <td>Numeric</td>
-    <td>Initial delay between retry attempts for write failures (in seconds)</td>
+    <td>Initial delay between retry attempts after failure (in seconds)</td>
     <td><tt>2</tt></td>
   </tr>
   <tr>
     <td><tt>:max_delay</tt></td>
     <td>Numeric</td>
-    <td>Maximum delay between retry attempts for write failures (in seconds)</td>
+    <td>Maximum delay between retry attempts after failure (in seconds)</td>
     <td><tt>60</tt></td>
   </tr>
   <tr>
