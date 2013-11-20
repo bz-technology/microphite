@@ -11,3 +11,6 @@
 /.ruby-gemset
 /.ruby-version
 /Gemfile.lock
+
+# Packaged gems 
+/pkg
