@@ -8,7 +8,7 @@ Overview
 Microphite is a tiny and fast, asynchronous graphite client.  It can be called
 many times per second with minimal overhead (approx 6-8 microseconds per
 write/gather call on commodity hardware).  It is synchronized internally and
-client instances can safely be shared across threads.
+can be shared across threads.
 
 
 Usage
@@ -43,13 +43,13 @@ Accumulate counters (flushed every options[:flush_interval] seconds)
 
     client.gather('some.counter': 22, 'another.counter': 10)
 
-Time a code block (results are gather()'d to the specified key)
+Time a code block (results are gathered to the specified key)
 
     client.time('app.timings.important_stuff') do
       important_stuff()
     end
 
-Prefixing helper
+Prepend prefixes on-the-fly:
 
     client.prefix('app.') do |app_ns|
       # Key is prefixed with 'app.' automatically
@@ -108,7 +108,7 @@ Client Options
   <tr>
     <td><tt>:flush_interval</tt></td>
     <td>Numeric</td>
-    <td>How often to flush gather()'d data (in seconds)</td>
+    <td>How often to flush gathered data (in seconds)</td>
     <td><tt>10.0</tt></td>
   </tr>
   <tr>
