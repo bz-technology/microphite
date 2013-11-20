@@ -21,8 +21,8 @@ module Microphite
 
         # Shared state
         @status           = :running
-        @gather_stack     = []
-        @write_stack      = []
+        @gather_queue     = Queue.new
+        @write_queue      = Queue.new
 
         # Worker state
         @accumulating     = {}
@@ -45,11 +45,11 @@ module Microphite
       end
 
       def write(metrics)
-        push(@write_stack, metrics.clone)
+        push(@write_queue, metrics.clone)
       end
 
       def gather(metrics)
-        push(@gather_stack, metrics.clone)
+        push(@gather_queue, metrics.clone)
       end
 
       def prefix(prefix, &block)
@@ -106,11 +106,8 @@ module Microphite
       def worker_loop
         loop do
           wrap_errors do
-            writes = nil
-            gathers = nil
-
             @lock.synchronize do
-              if @write_stack.empty? and @gather_stack.empty?
+              if @write_queue.empty? and @gather_queue.empty?
                 case @status
                   when :running
                     wait_time = @next_flush - now
@@ -132,37 +129,32 @@ module Microphite
                     Thread.exit
                 end
               end
-
-              # Swap existing stacks with new ones
-              writes, @write_stack = @write_stack, []
-              gathers, @gather_stack = @gather_stack, []
             end
 
-            unwind(writes).each { |m| write_metric m }
-            unwind(gathers).each { |m| accumulate m }
+            unwind(@write_queue).each { |m| write_metric m }
+            unwind(@gather_queue).each { |m| accumulate m }
             flush_accumulating if should_flush?
           end
         end
       end
 
-      def push(stack, value)
-        timestamp = now
-        pushed = false
+      def push(queue, value)
         @lock.synchronize do
-          if stack.length <= @limit and @status == :running
-            stack << timestamp << value
-            pushed = true
+          if queue.length <= @limit and @status == :running
+            queue.push [now, value]
             @worker_event.signal
+            true
+          else
+            false
           end
         end
-        pushed
       end
 
-      def unwind(stack)
+      def unwind(queue)
         metrics = []
-        until stack.empty?
-          value = stack.pop
-          timestamp = stack.pop
+        until queue.empty?
+          tuple = queue.pop
+          timestamp, value = tuple[0], tuple[1]
           wrap_errors do
             case value
               when Hash
