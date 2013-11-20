@@ -8,10 +8,10 @@ require 'microphite/version'
 Gem::Specification.new do |gem|
   gem.name = 'microphite'
   gem.version = Microphite::VERSION
-  gem.authors = %w(Bob Ziuchkovski)
-  gem.email = %w(bob@bz-technology.com)
-  gem.summary = 'A blazing fast, thread-safe graphite client'
-  gem.description = 'A blazing fast, thread-safe graphite client'
+  gem.authors = %w(BZ Technology Services, LLC)
+  gem.email = %w(support@bz-technology.com)
+  gem.summary = 'A tiny and fast, asynchronous graphite client'
+  gem.description = 'A tiny and fast, asynchronous graphite client'
   gem.homepage = 'https://github.com/bz-technology/microphite'
 
   gem.add_development_dependency 'rake'
