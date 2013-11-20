@@ -84,6 +84,21 @@ module Microphite
           lines.should match(/^key#{n} #{n * 10}\.0* \d+$/)
         end
       end
+
+      it 'should reset accumulated data after flush_interval' do
+        rst_server = Helpers::SingleServe.new(transport)
+        rst_options = { host: 'localhost', port: rst_server.port, transport: transport, flush_interval: 0.05 }
+        rst_client = Microphite::Client::Socket.new(rst_options)
+
+        rst_client.gather(key: 42)
+        sleep 0.075
+        rst_client.gather(key: 21)
+        rst_client.close
+
+        lines = rst_server.bytes
+        lines.should match(/^key 42\.0* \d+$/)
+        lines.should match(/^key 21\.0* \d+$/)
+      end
     end
 
     describe :time do
