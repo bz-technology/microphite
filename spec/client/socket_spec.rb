@@ -71,7 +71,7 @@ module Microphite
         lines.should match(/^key2 2\.50* \d+$/)
       end
 
-      it 'should accumulate data' do
+      it 'should flush accumulated data' do
         (1..10).each do
           @client.gather(key1: 1)
           @client.gather('key2' => 2)
@@ -101,6 +101,55 @@ module Microphite
         value = pattern.match(lines)[:value]
         value.should_not eq nil
         expect { value > 0 and value < outer_timing }.to be_true
+      end
+    end
+
+    describe :prefix do
+      it 'should prefix :write' do
+        prefixed = @client.prefix('test.')
+        prefixed.write(:key1 => 1, 'key2' => 2)
+
+        @client.close
+        lines = @server.bytes
+        lines.should match(/^test.key1 1\.0* \d+$/)
+        lines.should match(/^test.key2 2\.0* \d+$/)
+      end
+
+      it 'should prefix :gather' do
+        prefixed = @client.prefix('test.')
+        prefixed.gather(:key1 => 1, 'key2' => 2)
+
+        @client.close
+        lines = @server.bytes
+        lines.should match(/^test.key1 1\.0* \d+$/)
+        lines.should match(/^test.key2 2\.0* \d+$/)
+      end
+
+      it 'should prefix :time' do
+        prefixed = @client.prefix('test.')
+        prefixed.time(:key) { 42 }
+
+        @client.close
+        lines = @server.bytes
+        lines.should match(/^test.key [0-9.]+ \d+$/)
+      end
+
+      it 'should prefix recursively' do
+        @client.prefix('p1.') do |p1|
+          p1.write(:key1 => 1)
+          p1.prefix('p2.') do |p2|
+            p2.gather(:key2 => 2)
+            p2.prefix('p3.') do |p3|
+              p3.time('key3') { 42 }
+            end
+          end
+        end
+
+        @client.close
+        lines = @server.bytes
+        lines.should match(/^p1.key1 [0-9.]+ \d+$/)
+        lines.should match(/^p1.p2.key2 [0-9.]+ \d+$/)
+        lines.should match(/^p1.p2.p3.key3 [0-9.]+ \d+$/)
       end
     end
   end
