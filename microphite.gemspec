@@ -12,9 +12,9 @@ Gem::Specification.new do |gem|
   gem.email = %w(bob@bz-technology.com)
   gem.summary = 'A blazing fast, thread-safe graphite client'
   gem.description = 'A blazing fast, thread-safe graphite client'
-  gem.homepage = 'https://github.com/ziuchkovski/microphite'
+  gem.homepage = 'https://github.com/bz-technology/microphite'
 
-  #gem.add_runtime_dependency 'timers', '>= 1.1.0'
+  gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec'
 
   gem.files = `git ls-files`.split("\n")
