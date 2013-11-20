@@ -109,7 +109,7 @@ Client Options
     <td><tt>:flush_interval</tt></td>
     <td>Numeric</td>
     <td>How often to flush gathered data (in seconds)</td>
-    <td><tt>10.0</tt></td>
+    <td><tt>1.0</tt></td>
   </tr>
   <tr>
     <td><tt>:limit</tt></td>

@@ -7,7 +7,7 @@ module Microphite
       def initialize(options)
         defaults = {
             prefix: '',            # Prefix every key with this
-            flush_interval: 10,    # How often to flush gathered metrics
+            flush_interval: 1.0,   # How often to flush gathered metrics
             limit: 1000000,        # Size limit for gather and write stacks
             error_handler: nil     # Callback block for exceptions (mainly for debug/dev)
         }

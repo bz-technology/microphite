@@ -1,9 +1,13 @@
 Microphite CHANGELOG
 ====================
 
+v0.5.3
+------
+- Change default flush period to 1 second for convenience
+
 v0.5.2
 ------
-- More simplification in Client::Base
+- Additional simplification in Client::Base
 
 v0.5.1
 ------
