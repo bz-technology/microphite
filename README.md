@@ -17,7 +17,7 @@ Usage
 Construct a standard socket client.  See the 'Client Options' section below
 for initializer options.
 
-    client = Microphite::Client::Socket.new(
+    client = Microphite.client(
         host: 'graphite.blah',
         port: 2003,
         transport: :udp,
@@ -27,13 +27,13 @@ Construct a client with an error_handler.  The client is fault tolerant, but
 an error_handler is useful for logging failure events.
 
     handler = Proc.new { |error| Rails.logger.error "Microphite error: #{error.message}" }
-    client = Microphite::Client::Socket.new(host: '...', error_handler: handler)
+    client = Microphite.client(host: '...', error_handler: handler)
 
 Construct a no-op/dummy client.  This is useful in development.  You can leave client API
 calls in-place and the dummy client will behave appropriately.
 
     # Initializer options are accepted, but no data is written
-    client = Microphite::Client::Dummy.new(host: 'blah', ...)
+    client = Microphite.noop(host: 'blah', ...)
 
 Send data points
 
