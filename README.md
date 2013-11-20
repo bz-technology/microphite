@@ -8,9 +8,8 @@ Overview
 --------
 
 Microphite is a tiny and fast, asynchronous graphite client.  It can be called
-many times per second with minimal overhead (approx 6-8 microseconds per
-write/gather call on commodity hardware).  It is synchronized internally and
-can be shared across threads.
+many times per second with minimal overhead.  It is synchronized internally and
+can be shared across threads.  Both tcp and udp connections are supported.
 
 
 Usage
@@ -20,13 +19,13 @@ Construct a standard socket client.  See the 'Client Options' section below
 for initializer options.
 
     client = Microphite.client(
-        host: 'graphite.blah',
+        host: 'graphite.host',
         port: 2003,
         transport: :udp,
-        prefix: 'some.prefix')
+        prefix: 'app.prefix.')
 
 Construct a client with an error_handler.  The client is fault tolerant, but
-an error_handler is useful for logging failure events.
+an error_handler is useful for logging connection failures.
 
     handler = Proc.new { |error| Rails.logger.error "Microphite error: #{error.message}" }
     client = Microphite.client(host: '...', error_handler: handler)
@@ -35,32 +34,31 @@ Construct a no-op/dummy client.  This is useful in development.  You can leave c
 calls in-place and the dummy client will behave appropriately.
 
     # Initializer options are accepted, but no data is written
-    client = Microphite.noop(host: 'blah', ...)
+    client = Microphite.noop(host: 'host', ...)
 
 Send data points
 
     client.write('some.key': 300, 'another.key': 25)
 
-Accumulate counters (flushed every options[:flush_interval] seconds)
+Accumulate counters (flushed every :flush_interval seconds)
 
     client.gather('some.counter': 22, 'another.counter': 10)
 
-Time a code block (results are gathered to the specified key)
+Time a code block, gathering to timing.task
 
-    client.time('app.timings.important_stuff') do
-      important_stuff()
+    client.time('timing.task') do
+      task
     end
 
-Prepend prefixes on-the-fly:
+Easy prefixing
 
-    client.prefix('app.') do |app_ns|
-      # Key is prefixed with 'app.' automatically
+    client.prefix('p1.') do |p1|
+      # Write to p1.key
       app.write(key: 42)
 
-      # Nest as much as you'd like
-      app_ns.prefix('sub.') do |sub_ns|
-        # Keys prefixed by 'app.sub.'
-        sub_ns.gather(something: 5)
+      p1.prefix('p2.') do |p2|
+        # Write to p1.p2.key
+        p2.write(key: 5)
       end
     end
 
