@@ -1,7 +1,9 @@
-[![Build Status](https://travis-ci.org/bz-technology/microphite.png?branch=master)](https://travis-ci.org/bz-technology/microphite)
-
 Microphite
 ==========
+[![Gem Version](https://badge.fury.io/rb/microphite.png)](http://rubygems.org/gems/microphite)
+[![Build Status](https://travis-ci.org/bz-technology/microphite.png?branch=master)](https://travis-ci.org/bz-technology/microphite)
+[![Code Climate](https://codeclimate.com/github/bz-technology/microphite.png)](https://codeclimate.com/github/bz-technology/microphite)
+[![Coverage Status](https://coveralls.io/repos/bz-technology/microphite/badge.png)](https://coveralls.io/r/bz-technology/microphite)
 
 
 Overview

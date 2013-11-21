@@ -4,6 +4,10 @@
 require 'microphite'
 require 'socket'
 
+# Coveralls support
+require 'coveralls'
+Coveralls.wear!
+
 Dir['./spec/support/**/*.rb'].each { |file| require file }
 
 
