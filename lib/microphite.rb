@@ -8,7 +8,7 @@ module Microphite
     Client::Socket.new(options)
   end
 
-  def self.noop(options=nil)
+  def self.noop(options={})
     Client::Noop.new(options)
   end
 end

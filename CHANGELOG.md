@@ -1,6 +1,10 @@
 Microphite CHANGELOG
 ====================
 
+v0.5.4
+------
+- Add tests for the convenience factories
+
 v0.5.3
 ------
 - Change default flush period to 1 second for convenience
