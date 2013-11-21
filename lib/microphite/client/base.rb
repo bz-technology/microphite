@@ -103,6 +103,24 @@ module Microphite
         raise(AssertionError, 'write_metric must be implemented in subclasses')
       end
 
+      def now
+        Time.now.to_f
+      end
+
+      def error(error)
+        if @error_handler.is_a? Proc
+          @error_handler.call(error)
+        end
+      end
+
+      def wrap_errors(&block)
+        begin
+          block.call
+        rescue Exception => e
+          error(e)
+        end
+      end
+
       private
 
       def worker_loop
@@ -182,24 +200,6 @@ module Microphite
 
       def should_flush?
         now > @next_flush
-      end
-
-      def now
-        Time.now.to_f
-      end
-
-      def error(error)
-        if @error_handler.is_a? Proc
-          @error_handler.call(error)
-        end
-      end
-
-      def wrap_errors(&block)
-        begin
-          block.call
-        rescue Exception => e
-          error(e)
-        end
       end
     end
   end

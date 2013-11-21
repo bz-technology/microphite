@@ -1,6 +1,10 @@
 Microphite CHANGELOG
 ====================
 
+v0.5.6
+------
+- Expose a few of Client::Base's helper methods as protected visibility
+
 v0.5.5
 ------
 - Use proc.call to ensure caller self is preserved
