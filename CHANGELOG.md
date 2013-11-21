@@ -1,6 +1,10 @@
 Microphite CHANGELOG
 ====================
 
+v0.5.5
+------
+- Use proc.call to ensure caller self is preserved
+
 v0.5.4
 ------
 - Add tests for the convenience factories

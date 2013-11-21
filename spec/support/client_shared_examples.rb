@@ -43,6 +43,17 @@ shared_examples 'a microphite client' do |before, after|
     it 'should return the evaluated block value' do
       expect(@client.time(:key) { 42 }).to eq 42
     end
+
+    it 'should preserve caller self' do
+      class Preserve
+        def a
+        end
+        def b(client)
+          client.time(:key) { a }
+        end
+      end
+      expect { Preserve.new.b(@client) }.not_to raise_error
+    end
   end
 
   describe :prefix do
@@ -51,6 +62,17 @@ shared_examples 'a microphite client' do |before, after|
       PUBLIC_METHODS.each do |method|
         prefixed.should respond_to method
       end
+    end
+
+    it 'should preserve caller self' do
+      class Preserve
+        def a
+        end
+        def b(client)
+          client.prefix(:key) { a }
+        end
+      end
+      expect { Preserve.new.b(@client) }.not_to raise_error
     end
   end
 

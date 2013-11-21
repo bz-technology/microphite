@@ -57,7 +57,7 @@ module Microphite
       def prefix(prefix, &block)
         prefixed = Private::Prefixed.new(self, prefix)
         if block_given?
-          prefixed.instance_eval &block
+          block.call(prefixed)
         end
         prefixed
       end
@@ -65,7 +65,7 @@ module Microphite
       def time(key, &block)
         if block_given?
           before = now
-          result = instance_eval &block
+          result = block.call
           after = now
           elapsed = after - before
           gather(key => elapsed)
