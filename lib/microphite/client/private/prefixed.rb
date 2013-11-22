@@ -10,18 +10,16 @@ module Microphite
           @prefix = prefix
         end
 
-        def write(metrics)
-          @client.write(mutate_hash(metrics))
+        def write(metrics, &block)
+          @client.write(mutate_hash(metrics), &block)
         end
 
-        def gather(metrics)
-          @client.gather(mutate_hash(metrics))
+        def gather(metrics, &block)
+          @client.gather(mutate_hash(metrics), &block)
         end
 
         def time(key, &block)
-          @client.time("#{@prefix}#{key}") do
-            block.call
-          end
+          @client.time("#{@prefix}#{key}", &block)
         end
 
         def prefix(additional, &block)

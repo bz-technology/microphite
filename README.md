@@ -52,6 +52,15 @@ Time a code block, gathering to timing.task
       task
     end
 
+Execute-around for writes and gathers -- Send data unless a block throws
+
+    client.write(accurate_data: 42) do
+      something_that_may_throw()
+    end
+    client.gather(accurate_data: 42) do
+      something_else_that_throws()
+    end
+
 Easy prefixing
 
     client.prefix('p1.') do |p1|

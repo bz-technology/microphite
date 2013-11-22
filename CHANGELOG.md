@@ -1,6 +1,10 @@
 Microphite CHANGELOG
 ====================
 
+v0.6.0
+------
+- Add execute-around support to write and gather methods
+
 v0.5.6
 ------
 - Expose a few of Client::Base's helper methods as protected visibility

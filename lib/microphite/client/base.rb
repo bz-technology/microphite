@@ -44,14 +44,24 @@ module Microphite
         end
       end
 
-      def write(metrics)
-        return false unless metrics.is_a? Hash
-        push(@write_queue, metrics)
+      def write(metrics, &block)
+        if block_given?
+          result = block.call
+          push(@write_queue, metrics) if metrics.is_a? Hash
+          result
+        else
+          push(@write_queue, metrics) if metrics.is_a? Hash
+        end
       end
 
-      def gather(metrics)
-        return false unless metrics.is_a? Hash
-        push(@gather_queue, metrics)
+      def gather(metrics, &block)
+        if block_given?
+          result = block.call
+          push(@gather_queue, metrics) if metrics.is_a? Hash
+          result
+        else
+          push(@gather_queue, metrics) if metrics.is_a? Hash
+        end
       end
 
       def prefix(prefix, &block)
