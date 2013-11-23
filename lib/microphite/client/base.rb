@@ -125,9 +125,14 @@ module Microphite
         loop do
           wrap_errors do
             event_wait
-            unwind(@write_queue).each { |m| write_metric m }
-            unwind(@gather_queue).each { |m| accumulate m }
+            # Unwind and flush gather queue first, since the timestamps are
+            # created at flush.  This is more sensitive to delays and fudging
+            unwind(@gather_queue).each { |metric| accumulate metric }
             flush_accumulating if should_flush?
+
+            # Handle write queue last, since the timestamps are stored at the
+            # time write() is called
+            unwind(@write_queue).each { |metric| write_metric metric }
           end
         end
       end
@@ -176,7 +181,9 @@ module Microphite
       end
 
       def flush_accumulating
-        @accumulating.each_pair { |k, v| write_metric(Metric.new(k, v, now)) }
+        # Capture timestamp first.  If write_metric fails, it might delay before retry
+        timestamp = now
+        @accumulating.each_pair { |k, v| write_metric(Metric.new(k, v, timestamp)) }
         @accumulating.clear
         @next_flush = now + @flush_interval
       end
