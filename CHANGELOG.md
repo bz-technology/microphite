@@ -1,6 +1,10 @@
 Microphite CHANGELOG
 ====================
 
+v0.6.1
+------
+- Code cleanup/refactoring.  No functional changes.
+
 v0.6.0
 ------
 - Add execute-around support to write and gather methods

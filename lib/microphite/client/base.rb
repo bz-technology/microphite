@@ -45,23 +45,11 @@ module Microphite
       end
 
       def write(metrics, &block)
-        if block_given?
-          result = block.call
-          push(@write_queue, metrics) if metrics.is_a? Hash
-          result
-        else
-          push(@write_queue, metrics) if metrics.is_a? Hash
-        end
+        push_around(@write_queue, metrics, &block)
       end
 
       def gather(metrics, &block)
-        if block_given?
-          result = block.call
-          push(@gather_queue, metrics) if metrics.is_a? Hash
-          result
-        else
-          push(@gather_queue, metrics) if metrics.is_a? Hash
-        end
+        push_around(@gather_queue, metrics, &block)
       end
 
       def prefix(prefix, &block)
@@ -136,31 +124,7 @@ module Microphite
       def worker_loop
         loop do
           wrap_errors do
-            @lock.synchronize do
-              if @write_queue.empty? and @gather_queue.empty?
-                case @status
-                  when :running
-                    wait_time = @next_flush - now
-                    if wait_time > 0
-                      @worker_event.wait(@lock, wait_time)
-                    end
-
-                  when :ending, :shutdown
-                    flush_accumulating
-                    wrap_errors do
-                      shutdown
-                    end
-                    @status = :shutdown
-                    @shutdown_event.broadcast
-                    Thread.exit
-
-                  else
-                    error(AssertionError.new("Invalid status: #{@status}"))
-                    Thread.exit
-                end
-              end
-            end
-
+            event_wait
             unwind(@write_queue).each { |m| write_metric m }
             unwind(@gather_queue).each { |m| accumulate m }
             flush_accumulating if should_flush?
@@ -168,16 +132,25 @@ module Microphite
         end
       end
 
+      def push_around(queue, metrics, &block)
+        if block_given?
+          result = block.call
+        else
+          result = nil
+        end
+        push(queue, metrics)
+        result
+      end
+
       def push(queue, metrics)
-        timestamp = now
-        cloned = metrics.clone
-        @lock.synchronize do
-          if queue.length <= @limit and @status == :running
-            queue.push [timestamp, cloned]
-            @worker_event.signal
-            true
-          else
-            false
+        if metrics.is_a? Hash
+          timestamp = now
+          cloned = metrics.clone
+          @lock.synchronize do
+            if queue.length <= @limit and @status == :running
+              queue.push [timestamp, cloned]
+              @worker_event.signal
+            end
           end
         end
       end
@@ -210,6 +183,33 @@ module Microphite
 
       def should_flush?
         now > @next_flush
+      end
+
+      def event_wait
+        @lock.synchronize do
+          if @write_queue.empty? and @gather_queue.empty?
+            case @status
+              when :running
+                wait_time = @next_flush - now
+                if wait_time > 0
+                  @worker_event.wait(@lock, wait_time)
+                end
+
+              when :ending, :shutdown
+                flush_accumulating
+                wrap_errors do
+                  shutdown
+                end
+                @status = :shutdown
+                @shutdown_event.broadcast
+                Thread.exit
+
+              else
+                error(AssertionError.new("Invalid status: #{@status}"))
+                Thread.exit
+            end
+          end
+        end
       end
     end
   end
