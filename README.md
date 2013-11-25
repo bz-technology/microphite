@@ -52,7 +52,7 @@ Time a code block, gathering to timing.task
       task
     end
 
-Execute-around for writes and gathers -- Send data unless a block throws
+Execute-around for writes and gathers -- Send data unless a block throws.  The block's return value is preserved.
 
     client.write(accurate_data: 42) do
       something_that_may_throw()
