@@ -14,9 +14,9 @@ Gem::Specification.new do |gem|
   gem.description = 'A tiny and fast, asynchronous graphite client'
   gem.homepage = 'https://github.com/bz-technology/microphite'
 
-  gem.add_development_dependency 'rake'
-  gem.add_development_dependency 'rspec'
-  gem.add_development_dependency 'coveralls'
+  gem.add_development_dependency 'rake', '~> 10.0'
+  gem.add_development_dependency 'rspec', '~> 2.14.1'
+  gem.add_development_dependency 'coveralls', '~> 0.7'
 
   gem.files = `git ls-files`.split("\n")
   gem.test_files = `git ls-files -- spec/*`.split("\n")
