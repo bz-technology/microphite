@@ -13,6 +13,8 @@ Microphite is a tiny and fast, asynchronous [Graphite](http://graphite.wikidot.c
 many times per second with minimal overhead.  It is synchronized internally and
 can be shared across threads.  Both tcp and udp connections are supported.
 
+Microphite has been in use in production by a BZ technology client for quite some time without issue.
+
 
 Usage
 -----

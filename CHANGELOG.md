@@ -1,6 +1,10 @@
 Microphite CHANGELOG
 ====================
 
+v1.0.0
+------
+- No functional changes.  Code has been used in production for a long time without issue.  Release v1.0 to indicate stability.
+
 v0.6.1
 ------
 - Code cleanup/refactoring.  No functional changes.
