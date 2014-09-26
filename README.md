@@ -9,7 +9,7 @@ Microphite
 Overview
 --------
 
-Microphite is a tiny and fast, asynchronous [Graphite](http://graphite.wikidot.com/) client.  It can be called
+Microphite is a tiny and fast, asynchronous [Graphite](http://graphite.readthedocs.org/en/latest/overview.html) client.  It can be called
 many times per second with minimal overhead.  It is synchronized internally and
 can be shared across threads.  Both tcp and udp connections are supported.
 
