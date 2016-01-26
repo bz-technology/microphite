@@ -22,67 +22,86 @@ Usage
 Construct a standard socket client.  See the 'Client Options' section below
 for initializer options.
 
-    client = Microphite.client(
-        host: 'graphite.host',
-        port: 2003,
-        transport: :udp,
-        prefix: 'app.prefix.')
+```ruby
+client = Microphite.client(
+    host: 'graphite.host',
+    port: 2003,
+    transport: :udp,
+    prefix: 'app.prefix.')
+```
 
 Construct a client with an error_handler.  The client is fault tolerant, but
 an error_handler is useful for logging connection failures.
 
-    handler = Proc.new { |error| Rails.logger.error "Microphite error: #{error.message}" }
-    client = Microphite.client(host: '...', error_handler: handler)
+```ruby
+handler = Proc.new { |error| Rails.logger.error "Microphite error: #{error.message}" }
+client = Microphite.client(host: '...', error_handler: handler)
+```
 
 Construct a no-op/dummy client.  This is useful in development.  You can leave client API
 calls in-place and the dummy client will behave appropriately.
 
-    # Initializer options are accepted, but no data is written
-    client = Microphite.noop(host: 'host', ...)
+```ruby
+# Initializer options are accepted, but no data is written
+client = Microphite.noop(host: 'host', ...)
+```
 
 Send data points
 
-    client.write('some.key': 300, 'another.key': 25)
+```ruby
+client.write('some.key': 300, 'another.key': 25)
+```
 
 Accumulate counters (flushed every :flush_interval seconds)
 
-    client.gather('some.counter': 22, 'another.counter': 10)
+```ruby
+client.gather('some.counter': 22, 'another.counter': 10)
+```
 
 Time a code block, gathering to timing.task
 
-    client.time('timing.task') do
-      task
-    end
+```ruby
+client.time('timing.task') do
+  task
+end
+```
 
 Execute-around for writes and gathers -- Send data unless a block throws.  The block's return value is preserved.
 
-    client.write(accurate_data: 42) do
-      something_that_may_throw()
-    end
-    client.gather(accurate_data: 42) do
-      something_else_that_throws()
-    end
+```ruby
+client.write(accurate_data: 42) do
+  something_that_may_throw()
+end
+client.gather(accurate_data: 42) do
+  something_else_that_throws()
+end
+```
 
 Easy prefixing
 
-    client.prefix('p1.') do |p1|
-      # Write to p1.key
-      app.write(key: 42)
+```ruby
+client.prefix('p1.') do |p1|
+  # Write to p1.key
+  app.write(key: 42)
 
-      p1.prefix('p2.') do |p2|
-        # Write to p1.p2.key
-        p2.write(key: 5)
-      end
-    end
+  p1.prefix('p2.') do |p2|
+    # Write to p1.p2.key
+    p2.write(key: 5)
+  end
+end
+```
 
 Close the client, waiting for data to flush
 
-    client.close
+```ruby
+client.close
+```
 
 Alternatively, wait at most 1 second to flush
 
-    flushed = client.close(1)
-
+```ruby
+flushed = client.close(1)
+```
 
 Client Options
 --------------
